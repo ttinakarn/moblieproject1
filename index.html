@@ -14,8 +14,16 @@
 
 <body>
     <ons-page>
-        <ons-toolbar swipeable position="auto">
-            <div class="center">Home</div>
+        <ons-toolbar>
+            <div class="left">
+                <i class="zmdi zmdi-shopping-basket"></i>
+            </div>
+            <div class="center">
+                Home
+            </div>
+            <div class="right">
+                <i class="zmdi zmdi-info-outline"></i>
+            </div>
         </ons-toolbar>
 
         <ons-tabbar swipeable position="auto">
@@ -43,8 +51,7 @@
     </template>
 
     <script>
-        document.addEventListener('prechange', function (event) 
-        {
+        document.addEventListener('prechange', function (event) {
             document.querySelector('ons-toolbar .center').innerHTML = event.tabItem.getAttribute('label');
         });
     </script>
