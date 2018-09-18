@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="ejs.js"></script>
     <title>PSU Mall</title>
 </head>
 
@@ -19,9 +20,7 @@
             <div class="left">
                 <i class="zmdi zmdi-shopping-basket zmdi-hc-2x" style="color: orange; padding: 5px"></i>
             </div>
-            <div class="center">
-                Home
-            </div>
+            <div class="center" id="appname">Home</div>
             <div class="right">
                 <i class="zmdi zmdi-info-outline zmdi-hc-2x" style="color: orange; padding: 5px"></i>
                 </i>
@@ -44,85 +43,26 @@
             </div>
             <br>
             <ons-carousel swipeable auto-scroll overscrollable id="carousel" style="height: 300px;">
-                <ons-carousel-item style="background: url('images/1.jpg') no-repeat center; background-size: contain;">
-                </ons-carousel-item>
-                <ons-carousel-item style="background: url('images/2.jpg') no-repeat center; background-size: contain;">
-                </ons-carousel-item>
-                <ons-carousel-item style="background: url('images/3.jpg') no-repeat center; background-size: contain;">
-                </ons-carousel-item>
+                <ons-carousel-item id="carousel1"></ons-carousel-item>
+                <ons-carousel-item id="carousel2"></ons-carousel-item>
+                <ons-carousel-item id="carousel3"></ons-carousel-item>
             </ons-carousel>
             <br>
-            <ons-row height="150px">
-                <ons-col style="background-color: rgb(255, 66, 98)">
-                    <p style="text-align: center;">
-                        <i class="zmdi zmdi-face zmdi-hc-3x"></i>
-                    </p>
-                    <p style="text-align: center;">Beauty</i>
-                    </p>
-                </ons-col>
-                <ons-col style="background-color: rgb(77, 182, 50)">
-                    <p style="text-align: center;">
-                        <i class="zmdi zmdi-bike zmdi-hc-3x"></i>
-                    </p>
-                    <p style="text-align: center;">Sports</i>
-                    </p>
-                </ons-col>
-                <ons-col style="background-color: rgb(5, 156, 194)">
-                    <p style="text-align: center;">
-                        <i class="zmdi zmdi-devices zmdi-hc-3x"></i>
-                    </p>
-                    <p style="text-align: center;">Computer</i>
-                    </p>
-                </ons-col>
-            </ons-row>
+                <div id="icons"></div>
+                <script id="icon_template" type="text/template">            
+                    <ons-row height="150px">
+                        <!-- ทำ for each ด้วย -->
+                        <% categories.forEach(function(category){ %>
+                            <ons-col style="<%= category.style %>" width="33%">
+                                <p style="text-align: center;">
+                                    <i class="<%= category.icon %>"></i>
+                                </p>
+                                <p style="text-align: center;"><%= category.name %></p>
+                            </ons-col>
+                        <% }); %>
+                    </ons-row>
+                </script>
             <br>
-            <ons-row>
-                <ons-col style="background-color: rgb(255, 90, 118)">
-                    <p style="text-align: center;">
-                        <i class="zmdi zmdi-camera zmdi-hc-3x"></i>
-                    </p>
-                    <p style="text-align: center;">Camera</i>
-                    </p>
-                </ons-col>
-                <ons-col style="background-color: rgb(112, 202, 90)">
-                    <p style="text-align: center;">
-                        <i class="zmdi zmdi-seat zmdi-hc-3x"></i>
-                    </p>
-                    <p style="text-align: center;">Furniture</i>
-                    </p>
-                </ons-col>
-                <ons-col style="background-color: rgb(43, 179, 212)">
-                    <p style="text-align: center;">
-                        <i class="zmdi zmdi-smartphone zmdi-hc-3x"></i>
-                    </p>
-                    <p style="text-align: center;">Smartphone</i>
-                    </p>
-                </ons-col>
-            </ons-row>
-            <br>
-            <ons-row>
-                <ons-col style="background-color: rgb(243, 130, 149)">
-                    <p style="text-align: center;">
-                        <i class="zmdi zmdi-toys zmdi-hc-3x"></i>
-                    </p>
-                    <p style="text-align: center;">Toy</i>
-                    </p>
-                </ons-col>
-                <ons-col style="background-color: rgb(148, 233, 127)">
-                    <p style="text-align: center;">
-                        <i class="zmdi zmdi-wrench zmdi-hc-3x"></i>
-                    </p>
-                    <p style="text-align: center;">Hardware</i>
-                    </p>
-                </ons-col>
-                <ons-col style="background-color: rgb(121, 212, 235)">
-                    <p style="text-align: center;">
-                        <i class="zmdi zmdi-washing-machine zmdi-hc-3x"></i>
-                    </p>
-                    <p style="text-align: center;">Appliance</i>
-                    </p>
-                </ons-col>
-            </ons-row>
         </ons-page>
     </template>
 
@@ -181,5 +121,62 @@
         </ons-page>
     </template>
 </body>
+<script>
+    getHomeData();
+    //อันนี้เป็นตัวเช็คว่าปุ่มไหนโดนกด
+    document.addEventListener('prechange', function (event) {
+        if (event.index == 0) {
+            console.log('Home clicked');
+            //ถ้าคลิก home ให้เอาข้อมูลหน้า home มา show
+            getHomeData();
+        }
+        else if (event.index == 1) {
+            console.log('Cart clicked');
+            //ถ้าคลิก cart ให้เอาข้อมูลหน้า cart มา show
+            getCartData();
+
+        }
+        // document.querySelector('ons-toolbar .center')
+        //     .innerHTML = event.tabItem.getAttribute('label');
+    });
+
+    function getHomeData() {
+        $.getJSON('home.json', function (data) {
+            console.log(data);
+            $('#appname').html(data.appname);
+
+            // var style = "background: url('images/" + data.slides[0] + "') no-repeat center; background-size: contain;";
+            // $('#carousel1').attr('style', style);
+            //$('#carousel1').css("background", data.slides[0]);
+            for (var i = 0; i < data.slides.length; i++) {
+                let index = i + 1;
+                var style = "background: url('images/" + data.slides[i] + "') no-repeat center; background-size: contain;";
+                $('#carousel' + index).attr('style', style);
+            }
+
+            // $('#icon1').attr('icon', data.categories[0].icon);
+            // $('#icon1_text').html(data.categories[0].name);
+            // -------------------------------------------------
+            // for (var i = 0; i < data.categories.length; i++) {
+            //     let index = i + 1;
+            //     $('#icon' + index).attr('icon', data.categories[i].icon);
+            //     $('#icon' + index + '_text').html(data.categories[i].name);
+            // }
+            // -------------------------------------------------
+            var icon_template = $('#icon_template').html();
+            // for (var i = 0; i < data.categories.length; i++) 
+            // {
+                html = ejs.render(icon_template, {categories: data.categories});
+                $('#icons').html(html);
+            // }
+            console.log();
+        })
+    }
+    function getCartData() {
+        $.getJSON('cart.json', function (data) {
+            console.log(data);
+        })
+    }
+</script>
 
 </html>
