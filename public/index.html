@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0", shrink-to-fit=no>
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
     <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
     <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
@@ -12,17 +13,27 @@
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
     <script src="ejs.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-firestore.js"></script>
     <script>
-    // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyAn6MsbK-EXDrWWANHjN_Mfh7MMTD0_VVo",
-        authDomain: "shopee-b3287.firebaseapp.com",
-        databaseURL: "https://shopee-b3287.firebaseio.com",
-        projectId: "shopee-b3287",
-        storageBucket: "shopee-b3287.appspot.com",
-        messagingSenderId: "222099191341"
-    };
-    firebase.initializeApp(config);
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyAn6MsbK-EXDrWWANHjN_Mfh7MMTD0_VVo",
+            authDomain: "shopee-b3287.firebaseapp.com",
+            databaseURL: "https://shopee-b3287.firebaseio.com",
+            projectId: "shopee-b3287",
+            storageBucket: "shopee-b3287.appspot.com",
+            messagingSenderId: "222099191341"
+        };
+        firebase.initializeApp(config);
+
+        // Initialize Cloud Firestore through Firebase
+        var db = firebase.firestore();
+
+        // Disable deprecated features
+        db.settings({
+            timestampsInSnapshots: true
+        });
     </script>
     <title>PSU Mall</title>
 </head>
@@ -45,6 +56,8 @@
             </ons-tab>
             <ons-tab page="tab2.html" label="Cart" icon="md-shopping-cart">
             </ons-tab>
+            <ons-tab page="tab3.html" label="All Products" icon="md-apps">
+            </ons-tab>
         </ons-tabbar>
     </ons-page>
 
@@ -61,7 +74,7 @@
                 <ons-carousel-item id="carousel3"></ons-carousel-item>
             </ons-carousel>
             <br>
-                <div id="icons"></div>
+            <div id="icons"></div>
                 <script id="icon_template" type="text/template">            
                     <ons-row height="150px">
                         <!-- ทำ for each ด้วย -->
@@ -133,6 +146,31 @@
             </section>
         </ons-page>
     </template>
+
+    <template id="tab3.html">
+        <ons-page id="Tab3" >
+            <section style="padding: 8px">
+                <ons-button modifier="large" onclick="addNewData();">Add New Data</ons-button>
+            </section>
+            <div id="cards"></div>
+            <script id="product_template" type="text/template">
+                <div class="card-group" style="margin: auto;">
+                    <div class="row" style="padding: 8px">
+                        <% products.forEach(function(product){ %> 
+                            <div class="card col-5" style="margin-right: auto; margin-left: auto;">
+                                <img class="card-img-top" id="photo" src="images/<%= product.photo %>" alt="Card image">
+                                <div class="card-body">
+                                    <p class="card-title" style="font-size: 15px;"><%= product.title %></p>
+                                    <p class="card-text" style="font-size: 13px;"><%= product.category %><br>price: ฿<%= product.price %></p>
+                                </div> 
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </script>
+        </ons-page>
+    </template>
+
 </body>
 <script>
     getHomeData();
@@ -147,49 +185,124 @@
             console.log('Cart clicked');
             //ถ้าคลิก cart ให้เอาข้อมูลหน้า cart มา show
             getCartData();
-
         }
-        // document.querySelector('ons-toolbar .center')
-        //     .innerHTML = event.tabItem.getAttribute('label');
+        else if (event.index == 2) {
+            console.log('All product clicked');
+            getAllProduct();
+        }
     });
 
     function getHomeData() {
-        $.getJSON('home.json', function (data) {
-            console.log(data);
-            $('#appname').html(data.appname);
+        var docRef = db.collection("UI").doc("home");
 
-            // var style = "background: url('images/" + data.slides[0] + "') no-repeat center; background-size: contain;";
-            // $('#carousel1').attr('style', style);
-            //$('#carousel1').css("background", data.slides[0]);
-            for (var i = 0; i < data.slides.length; i++) {
-                let index = i + 1;
-                var style = "background: url('images/" + data.slides[i] + "') no-repeat center; background-size: contain;";
-                $('#carousel' + index).attr('style', style);
-            }
-
-            // $('#icon1').attr('icon', data.categories[0].icon);
-            // $('#icon1_text').html(data.categories[0].name);
-            // -------------------------------------------------
-            // for (var i = 0; i < data.categories.length; i++) {
-            //     let index = i + 1;
-            //     $('#icon' + index).attr('icon', data.categories[i].icon);
-            //     $('#icon' + index + '_text').html(data.categories[i].name);
-            // }
-            // -------------------------------------------------
-            var icon_template = $('#icon_template').html();
-            // for (var i = 0; i < data.categories.length; i++) 
-            // {
+        docRef.get().then(function(doc) 
+        {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+                var data = doc.data();
+                $('#appname').html(data.appname);
+                for (var i = 0; i < data.slides.length; i++) {
+                    let index = i + 1;
+                    var style = "background: url('images/" + data.slides[i] + "') no-repeat center; background-size: contain;";
+                    $('#carousel' + index).attr('style', style);
+                }
+                var icon_template = $('#icon_template').html();
                 html = ejs.render(icon_template, {categories: data.categories});
                 $('#icons').html(html);
-            // }
-            console.log();
-        })
+            } 
+            else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
+
+        var productRef = db.collection('collection').doc('products');
+        productRef.get().then(function(doc) 
+        {
+            if (doc.exists) {
+                console.log("Document data:", doc.data());
+                var data = doc.data();
+
+                var product_template = $('#product_template').html();
+                html = ejs.render(product_template, {products: data.product});
+                $('#cards').html(html);
+            }
+            else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
+
+        // $.getJSON('home.json', function (data) {
+        //     console.log(data);
+        //     $('#appname').html(data.appname);
+
+        //     // var style = "background: url('images/" + data.slides[0] + "') no-repeat center; background-size: contain;";
+        //     // $('#carousel1').attr('style', style);
+        //     //$('#carousel1').css("background", data.slides[0]);
+        //     for (var i = 0; i < data.slides.length; i++) {
+        //         let index = i + 1;
+        //         var style = "background: url('images/" + data.slides[i] + "') no-repeat center; background-size: contain;";
+        //         $('#carousel' + index).attr('style', style);
+        //     }
+
+        //     // $('#icon1').attr('icon', data.categories[0].icon);
+        //     // $('#icon1_text').html(data.categories[0].name);
+        //     // -------------------------------------------------
+        //     // for (var i = 0; i < data.categories.length; i++) {
+        //     //     let index = i + 1;
+        //     //     $('#icon' + index).attr('icon', data.categories[i].icon);
+        //     //     $('#icon' + index + '_text').html(data.categories[i].name);
+        //     // }
+        //     // -------------------------------------------------
+        //     var icon_template = $('#icon_template').html();
+        //     // for (var i = 0; i < data.categories.length; i++) 
+        //     // {
+        //         html = ejs.render(icon_template, {categories: data.categories});
+        //         $('#icons').html(html);
+        //     // }
+        //     console.log();
+        // })
     }
+
     function getCartData() {
         $.getJSON('cart.json', function (data) {
             console.log(data);
         })
     }
+
+    function getAllProduct() {
+        var allProductRef = db.collection("PRODUCTS").where("category", "==", "Sport");
+        allProductRef.get().then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                // doc.data() is never undefined for query doc snapshots
+                console.log(doc.id, " => ", doc.data());
+            });
+        });
+    }
+
+    function addNewData(){
+        var data = {
+            pid: 4,
+            title: 'iPhoneXS',
+            price: 50000,
+            category: 'Smartphone', 
+        }
+        db.collection("PRODUCTS").add(data)
+            .then(function(docRef) {
+                console.log("Document written with ID: ", docRef.id);
+            })
+            .catch(function(error) {
+                console.error("Error adding document: ", error);
+            });
+    }
 </script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
 
 </html>
