@@ -16,7 +16,6 @@
     <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.4.1/firebase-firestore.js"></script>
     <script>
-        // Initialize Firebase
         var config = {
             apiKey: "AIzaSyAn6MsbK-EXDrWWANHjN_Mfh7MMTD0_VVo",
             authDomain: "shopee-b3287.firebaseapp.com",
@@ -26,11 +25,7 @@
             messagingSenderId: "222099191341"
         };
         firebase.initializeApp(config);
-
-        // Initialize Cloud Firestore through Firebase
         var db = firebase.firestore();
-
-        // Disable deprecated features
         db.settings({
             timestampsInSnapshots: true
         });
@@ -41,14 +36,7 @@
 <body>
     <ons-page>
         <ons-toolbar>
-            <div class="left">
-                <i class="zmdi zmdi-shopping-basket zmdi-hc-2x" style="color: orange; padding: 5px"></i>
-            </div>
             <div class="center" id="appname">Home</div>
-            <div class="right">
-                <i class="zmdi zmdi-info-outline zmdi-hc-2x" style="color: orange; padding: 5px"></i>
-                </i>
-            </div>
         </ons-toolbar>
 
         <ons-tabbar swipeable position="auto">
@@ -67,20 +55,17 @@
             <div style="text-align: center;">
                 <ons-search-input placeholder="Search" onchange="ons.notification.alert('Searched for: ' + this.value)"></ons-search-input>
             </div>
-            <br>
-            <ons-carousel swipeable auto-scroll overscrollable id="carousel" style="height: 300px;">
+            <ons-carousel swipeable auto-scroll overscrollable id="carousel" style="height: 170px;">
                 <ons-carousel-item id="carousel1"></ons-carousel-item>
                 <ons-carousel-item id="carousel2"></ons-carousel-item>
                 <ons-carousel-item id="carousel3"></ons-carousel-item>
             </ons-carousel>
-            <br>
             <div id="icons"></div>
                 <script id="icon_template" type="text/template">            
                     <ons-row height="150px">
-                        <!-- ทำ for each ด้วย -->
                         <% categories.forEach(function(category){ %>
                             <ons-col style="<%= category.style %>" width="33%">
-                                <p style="text-align: center;">
+                                <p style="text-align: center;  margin: 10px;">
                                     <i class="<%= category.icon %>"></i>
                                 </p>
                                 <p style="text-align: center;"><%= category.name %></p>
@@ -98,7 +83,7 @@
                 <ons-list-header>Shopping cart</ons-list-header>
                 <ons-list-item>
                     <div class="left">
-                        <img src="images/item1.jpg" style="height: 50px;">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item1.jpg?alt=media&token=423ff2c6-a4c2-4262-b251-2c49d3e4148f" style="height: 50px;">
                     </div>
                     <div class="center">
                         <ons-row>
@@ -112,7 +97,7 @@
                 </ons-list-item>
                 <ons-list-item>
                     <div class="left">
-                        <img src="images/item2.jpg" style="height: 50px;">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item2.jpg?alt=media&token=a24167a7-730c-4840-ba37-62d82398458b" style="height: 50px;">
                     </div>
                     <div class="center">
                         <ons-row>
@@ -127,7 +112,7 @@
                 </ons-list-item>
                 <ons-list-item>
                     <div class="left">
-                        <img src="images/item3.jpg" style="height: 50px;">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item3.jpg?alt=media&token=8cc326d2-442e-49a4-bc75-a40bc76c24dd" style="height: 50px;">
                     </div>
                     <div class="center">
                         <ons-row>
@@ -198,12 +183,11 @@
         docRef.get().then(function(doc) 
         {
             if (doc.exists) {
-                console.log("Document data:", doc.data());
                 var data = doc.data();
                 $('#appname').html(data.appname);
                 for (var i = 0; i < data.slides.length; i++) {
                     let index = i + 1;
-                    var style = "background: url('images/" + data.slides[i] + "') no-repeat center; background-size: contain;";
+                    var style = "background: url('" + data.slides[i] + "') no-repeat center; background-size: contain;";                 
                     $('#carousel' + index).attr('style', style);
                 }
                 var icon_template = $('#icon_template').html();
@@ -212,7 +196,7 @@
             } 
             else {
                 // doc.data() will be undefined in this case
-                console.log("No such document!");
+                console.log("No db.collection(UI).doc(home)");
             }
         }).catch(function(error) {
             console.log("Error getting document:", error);
@@ -236,37 +220,6 @@
         }).catch(function(error) {
             console.log("Error getting document:", error);
         });
-
-        // $.getJSON('home.json', function (data) {
-        //     console.log(data);
-        //     $('#appname').html(data.appname);
-
-        //     // var style = "background: url('images/" + data.slides[0] + "') no-repeat center; background-size: contain;";
-        //     // $('#carousel1').attr('style', style);
-        //     //$('#carousel1').css("background", data.slides[0]);
-        //     for (var i = 0; i < data.slides.length; i++) {
-        //         let index = i + 1;
-        //         var style = "background: url('images/" + data.slides[i] + "') no-repeat center; background-size: contain;";
-        //         $('#carousel' + index).attr('style', style);
-        //     }
-
-        //     // $('#icon1').attr('icon', data.categories[0].icon);
-        //     // $('#icon1_text').html(data.categories[0].name);
-        //     // -------------------------------------------------
-        //     // for (var i = 0; i < data.categories.length; i++) {
-        //     //     let index = i + 1;
-        //     //     $('#icon' + index).attr('icon', data.categories[i].icon);
-        //     //     $('#icon' + index + '_text').html(data.categories[i].name);
-        //     // }
-        //     // -------------------------------------------------
-        //     var icon_template = $('#icon_template').html();
-        //     // for (var i = 0; i < data.categories.length; i++) 
-        //     // {
-        //         html = ejs.render(icon_template, {categories: data.categories});
-        //         $('#icons').html(html);
-        //     // }
-        //     console.log();
-        // })
     }
 
     function getCartData() {
