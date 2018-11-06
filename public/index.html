@@ -3,14 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0", shrink-to-fit=no>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" , shrink-to-fit=no>
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
+        crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
     <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
     <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.2.0/css/material-design-iconic-font.min.css">
-    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
     <script src="ejs.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.5.0/firebase.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.3.0/firebase-app.js"></script>
@@ -61,7 +63,7 @@
                 <ons-carousel-item id="carousel3"></ons-carousel-item>
             </ons-carousel>
             <div id="icons"></div>
-                <script id="icon_template" type="text/template">            
+            <script id="icon_template" type="text/template">
                     <ons-row height="150px">
                         <% categories.forEach(function(category){ %>
                             <ons-col style="<%= category.style %>" width="33%">
@@ -83,7 +85,8 @@
                 <ons-list-header>Shopping cart</ons-list-header>
                 <ons-list-item>
                     <div class="left">
-                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item1.jpg?alt=media&token=423ff2c6-a4c2-4262-b251-2c49d3e4148f" style="height: 50px;">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item1.jpg?alt=media&token=423ff2c6-a4c2-4262-b251-2c49d3e4148f"
+                            style="height: 50px;">
                     </div>
                     <div class="center">
                         <ons-row>
@@ -97,7 +100,8 @@
                 </ons-list-item>
                 <ons-list-item>
                     <div class="left">
-                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item2.jpg?alt=media&token=a24167a7-730c-4840-ba37-62d82398458b" style="height: 50px;">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item2.jpg?alt=media&token=a24167a7-730c-4840-ba37-62d82398458b"
+                            style="height: 50px;">
                     </div>
                     <div class="center">
                         <ons-row>
@@ -107,12 +111,13 @@
                     </div>
 
                     <div class="right">
-                        <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey"></i>
+                        <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey)"></i>
                     </div>
                 </ons-list-item>
                 <ons-list-item>
                     <div class="left">
-                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item3.jpg?alt=media&token=8cc326d2-442e-49a4-bc75-a40bc76c24dd" style="height: 50px;">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item3.jpg?alt=media&token=8cc326d2-442e-49a4-bc75-a40bc76c24dd"
+                            style="height: 50px;">
                     </div>
                     <div class="center">
                         <ons-row>
@@ -133,26 +138,25 @@
     </template>
 
     <template id="tab3.html">
-        <ons-page id="Tab3" >
+        <ons-page id="Tab3">
             <section style="padding: 8px">
                 <ons-button modifier="large" onclick="addNewData();">Add New Data</ons-button>
             </section>
-            <div id="cards"></div>
-            <script id="product_template" type="text/template">
-                <div class="card-group" style="margin: auto;">
-                    <div class="row" style="padding: 8px">
-                        <% products.forEach(function(product){ %> 
-                            <div class="card col-5" style="margin-right: auto; margin-left: auto;">
-                                <img class="card-img-top" id="photo" src="images/<%= product.photo %>" alt="Card image">
-                                <div class="card-body">
-                                    <p class="card-title" style="font-size: 15px;"><%= product.title %></p>
-                                    <p class="card-text" style="font-size: 13px;"><%= product.category %><br>price: ฿<%= product.price %></p>
-                                </div> 
-                            </div>
-                        <% }); %>
-                    </div>
-                </div>
-            </script>
+
+            <div id="cards">
+                <script id="product_template" type="text/template">
+                    <% products.forEach(function(product){ %> 
+                        <ons-card>
+                                <img src="<%= product.photo %>" alt="Onsen UI" style="width: 40%; display: block; margin-left: auto; margin-right: auto;">
+                            <p style="font-size: 17px;"><%= product.title %></p>
+                            <ons-row>
+                                <ons-col style="color: rgb(250, 96, 24); font-size: 20px; text-align: left;">฿<%= product.price %></ons-col>
+                                <ons-col style="text-align: right;"><i class="zmdi zmdi-shopping-cart zmdi-hc-2x" style="color: rgb(251, 195, 104"></i></ons-col>
+                            </ons-row>
+                        </ons-card>
+                    <% }); %>
+                </script>
+            </div>
         </ons-page>
     </template>
 
@@ -180,46 +184,54 @@
     function getHomeData() {
         var docRef = db.collection("UI").doc("home");
 
-        docRef.get().then(function(doc) 
-        {
+        docRef.get().then(function (doc) {
             if (doc.exists) {
                 var data = doc.data();
                 $('#appname').html(data.appname);
                 for (var i = 0; i < data.slides.length; i++) {
                     let index = i + 1;
-                    var style = "background: url('" + data.slides[i] + "') no-repeat center; background-size: contain;";                 
+                    var style = "background: url('" + data.slides[i] + "') no-repeat center; background-size: contain;";
                     $('#carousel' + index).attr('style', style);
                 }
                 var icon_template = $('#icon_template').html();
-                html = ejs.render(icon_template, {categories: data.categories});
+                html = ejs.render(icon_template, { categories: data.categories });
                 $('#icons').html(html);
-            } 
+            }
             else {
                 // doc.data() will be undefined in this case
                 console.log("No db.collection(UI).doc(home)");
             }
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.log("Error getting document:", error);
         });
 
-        var productRef = db.collection('collection').doc('products');
-        productRef.get().then(function(doc) 
-        {
-            if (doc.exists) {
-                console.log("Document data:", doc.data());
-                var data = doc.data();
+        // var productRef = db.collection("PRODUCTS").orderBy("pid", "asc");
+        // products = [];
+        // productRef.get().then(function (querySnapshot) {
+        //     querySnapshot.forEach(function (doc) {
+        //         console.log(doc.id, " => ", doc.data());
+        //         products.push(doc.data());
+        //     });
+        //     var product_template = $('#product_template').html();
+        //     html = ejs.render(product_template, { products: products });
+        //     $('#cards').html(html);
+        // });
+        // productRef.get().then(function (doc) {
+        //     if (doc.exists) {
+        //         console.log("Document data:", doc.data());
+        //         var data = doc.data();
 
-                var product_template = $('#product_template').html();
-                html = ejs.render(product_template, {products: data.product});
-                $('#cards').html(html);
-            }
-            else {
-                // doc.data() will be undefined in this case
-                console.log("No such document!");
-            }
-        }).catch(function(error) {
-            console.log("Error getting document:", error);
-        });
+        //         var product_template = $('#product_template').html();
+        //         html = ejs.render(product_template, { products: data.product });
+        //         $('#cards').html(html);
+        //     }
+        //     else {
+        //         // doc.data() will be undefined in this case
+        //         console.log("No such document!");
+        //     }
+        // }).catch(function (error) {
+        //     console.log("Error getting document:", error);
+        // });
     }
 
     function getCartData() {
@@ -229,33 +241,41 @@
     }
 
     function getAllProduct() {
-        var allProductRef = db.collection("PRODUCTS").where("category", "==", "Sport");
-        allProductRef.get().then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
+        var allProductRef = db.collection("PRODUCTS").orderBy("pid", "asc");
+        products = [];
+        allProductRef.get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
                 // doc.data() is never undefined for query doc snapshots
                 console.log(doc.id, " => ", doc.data());
+                products.push(doc.data());
             });
+            var product_template = $('#product_template').html();
+            html = ejs.render(product_template, { products: products });
+            $('#cards').html(html);
         });
     }
 
-    function addNewData(){
+    function addNewData() {
         var data = {
             pid: 4,
             title: 'iPhoneXS',
             price: 50000,
-            category: 'Smartphone', 
+            category: 'Smartphone',
         }
         db.collection("PRODUCTS").add(data)
-            .then(function(docRef) {
+            .then(function (docRef) {
                 console.log("Document written with ID: ", docRef.id);
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.error("Error adding document: ", error);
             });
     }
 </script>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
+    crossorigin="anonymous"></script>
 
 </html>
