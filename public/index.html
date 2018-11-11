@@ -87,56 +87,27 @@
         <ons-page id="Tab2">
             <ons-list>
                 <ons-list-header>Shopping cart</ons-list-header>
-                <ons-list-item>
-                    <div class="left">
-                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item1.jpg?alt=media&token=423ff2c6-a4c2-4262-b251-2c49d3e4148f"
-                            style="height: 50px;">
-                    </div>
-                    <div class="center">
-                        <ons-row>
-                            <b>Apple Watch Series 3 GPS 42mm Gray</b>
-                        </ons-row>
-                        <ons-row style="color: rgb(38, 94, 248)">฿12,650.00</ons-row>
-                    </div>
-                    <div class="right">
-                        <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey"></i>
-                    </div>
-                </ons-list-item>
-                <ons-list-item>
-                    <div class="left">
-                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item2.jpg?alt=media&token=a24167a7-730c-4840-ba37-62d82398458b"
-                            style="height: 50px;">
-                    </div>
-                    <div class="center">
-                        <ons-row>
-                            <b>MICROLAB SPEAKER 2.1</b>
-                        </ons-row>
-                        <ons-row style="color: rgb(38, 94, 248)">฿1,570.00</ons-row>
-                    </div>
-
-                    <div class="right">
-                        <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey"></i>
-                    </div>
-                </ons-list-item>
-                <ons-list-item>
-                    <div class="left">
-                        <img src="https://firebasestorage.googleapis.com/v0/b/shopee-b3287.appspot.com/o/item3.jpg?alt=media&token=8cc326d2-442e-49a4-bc75-a40bc76c24dd"
-                            style="height: 50px;">
-                    </div>
-                    <div class="center">
-                        <ons-row>
-                            <b>Nike Air Max 90 ดำเทาแดง เบอร์ 40</b>
-                        </ons-row>
-                        <ons-row style="color: rgb(38, 94, 248)">฿2,990.00</ons-row>
-                    </div>
-
-                    <div class="right">
-                        <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey"></i>
-                    </div>
-                </ons-list-item>
+                <div id="cart"></div>
+                <script id="cart_template" type="text/template">
+                    <% console.log(products)
+                        products.forEach(function(product){ %>
+                        <ons-list-item>
+                            <div class="left">
+                                <img src="<%= product.photo %>" style="height: 50px;">
+                            </div>
+                            <div class="center" style="margin: 10px;"">
+                                <ons-row><b><%= product.title %></b></ons-row>
+                                <ons-row style="color: rgb(250, 96, 24)">฿<%= product.price %></ons-row>
+                            </div>
+                            <div class="right">
+                                <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey"></i>
+                                </div>
+                        </ons-list-item>
+                    <% }); %>
+                </script>
             </ons-list>
             <section style="padding: 8px">
-                <ons-button modifier="large">PROCEED TO PAY</ons-button>
+                <ons-button modifier="large" style="background-color: rgb(250, 96, 24)">PROCEED TO PAY</ons-button>
             </section>
         </ons-page>
     </template>
@@ -182,10 +153,9 @@
                         <div style="color: rgb(250, 96, 24); font-size: 20px; text-align: left;">฿<%= product.price %></div><hr>
                         <div><%= product.detail %></div><br>
                         <section style="padding: 5px">
-                            <ons-button modifier="large" style="background-color: rgb(250, 96, 24);">Add to cart</ons-button>
+                            <ons-button modifier="large" style="background-color: rgb(250, 96, 24);" onclick="addToCart('<%= product.title %>');">Add to cart</ons-button>
                         </section>
                     </ons-card>
-                    
                 <% }); %>
             </script>
         </ons-page>
@@ -194,6 +164,8 @@
 <script>
 
     getHomeData();
+    var cart = [];
+
     //อันนี้เป็นตัวเช็คว่าปุ่มไหนโดนกด
     document.addEventListener('prechange', function (event) {
         if (event.index == 0) {
@@ -202,18 +174,16 @@
         }
         else if (event.index == 1) {
             console.log('Cart clicked');
-            localStorage.clear();
-            getCartData();
         }
         else if (event.index == 2) {
             console.log('All product clicked');
             var category = localStorage.getItem("name");
             getProduct(category);
-            localStorage.clear();
         }
     });
 
     function getHomeData() {
+        localStorage.clear();
         var docRef = db.collection("UI").doc("home");
 
         docRef.get().then(function (doc) {
@@ -255,14 +225,42 @@
         document.getElementById('tabbar').setActiveTab(2);
     }
 
+    function addToCart(title) {
+        ons.notification.toast(title + 'has been added to your cart!', {
+        timeout: 2000
+        });
+        cart.push(title);
+        getCartData();
+        // cart.forEach(function(title){
+        //     var productRef = db.collection("PRODUCTS").where("title", "==", title);
+        //     productRef.get().then(function (querySnapshot) {
+        //         console.log(querySnapshot.docs);
+        //         // var cart_template = $('#cart_template').html();
+        //         // html = ejs.render(cart_template, { product: querySnapshot.docs });
+        //         // $('#cart').html(html);
+        //     });
+        // });
+    };
+    
     function getCartData() {
-        $.getJSON('cart.json', function (data) {
-            console.log(data);
-        })
+        var cartData = [];
+        console.log('cart: ' + cart);
+        document.getElementById('cart').innerHTML = '';
+        cart.forEach(function(title){
+            var productRef = db.collection("PRODUCTS").where("title", "==", title);
+            productRef.get().then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    cartData.push(doc.data());
+                });
+                var cart_template = $('#cart_template').html();
+                html = ejs.render(cart_template, { products: cartData });
+                $('#cart').html(html);
+            });
+        });
     }
 
-    function viewByCategory(input) {
-        var category = localStorage.setItem("name", input);
+    function viewByCategory(txt) {
+        var category = localStorage.setItem("name", txt);
         document.getElementById('tabbar').setActiveTab(2);
     }
 
@@ -287,6 +285,7 @@
                 $('#cards').html(html);
             });
         }
+        localStorage.clear();
     }
 
     function showDetail(title) {
@@ -301,37 +300,21 @@
         myNavigator.pushPage('detail.html');
     };
 
-    function showDetailP() {
-    var dataproduct = localStorage.getItem('getDep');
-    var apr = db.collection("product").where("title", "==", dataproduct);
-    apr.get().then(function (querySnapshot) {
-      var page2_template = $('#page2_template').html();
-      var html = ejs.render(page2_template, { dataDep: querySnapshot.docs });
-      $('#showDep').html(html); 
-    })
-  
-  }
-
-
-    function addToCart() {
-
-    }
-
-    function addNewData() {
-        var data = {
-            pid: 4,
-            title: 'iPhoneXS',
-            price: 50000,
-            category: 'Smartphone',
-        }
-        db.collection("PRODUCTS").add(data)
-            .then(function (docRef) {
-                console.log("Document written with ID: ", docRef.id);
-            })
-            .catch(function (error) {
-                console.error("Error adding document: ", error);
-            });
-    }
+    // function addNewData() {
+    //     var data = {
+    //         pid: 4,
+    //         title: 'iPhoneXS',
+    //         price: 50000,
+    //         category: 'Smartphone',
+    //     }
+    //     db.collection("PRODUCTS").add(data)
+    //         .then(function (docRef) {
+    //             console.log("Document written with ID: ", docRef.id);
+    //         })
+    //         .catch(function (error) {
+    //             console.error("Error adding document: ", error);
+    //         });
+    // };
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous"></script>
