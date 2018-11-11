@@ -36,12 +36,13 @@
 </head>
 
 <body>
+        
     <ons-page>
         <ons-toolbar>
             <div class="center" id="appname">Home</div>
         </ons-toolbar>
 
-        <ons-tabbar swipeable position="auto">
+        <ons-tabbar swipeable position="auto" id="tabbar">
             <ons-tab page="tab1.html" label="Home" icon="ion-home, material:md-home" badge="5930213054" active>
             </ons-tab>
             <ons-tab page="tab2.html" label="Cart" icon="md-shopping-cart">
@@ -55,18 +56,20 @@
         <ons-page id="Tab1">
             <br>
             <div style="text-align: center;">
-                <ons-search-input placeholder="Search" onchange="ons.notification.alert('Searched for: ' + this.value)"></ons-search-input>
+                <ons-search-input placeholder="Search" onchange="search(this.value);"></ons-search-input>
             </div>
+
             <ons-carousel swipeable auto-scroll overscrollable id="carousel" style="height: 170px;">
                 <ons-carousel-item id="carousel1"></ons-carousel-item>
                 <ons-carousel-item id="carousel2"></ons-carousel-item>
                 <ons-carousel-item id="carousel3"></ons-carousel-item>
             </ons-carousel>
+
             <div id="icons"></div>
             <script id="icon_template" type="text/template">
                     <ons-row height="150px">
                         <% categories.forEach(function(category){ %>
-                            <ons-col style="<%= category.style %>" width="33%">
+                            <ons-col style="<%= category.style %>" width="33%" onclick="viewByCategory('<%= category.name %>');">
                                 <p style="text-align: center;  margin: 10px;">
                                     <i class="<%= category.icon %>"></i>
                                 </p>
@@ -111,7 +114,7 @@
                     </div>
 
                     <div class="right">
-                        <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey)"></i>
+                        <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey"></i>
                     </div>
                 </ons-list-item>
                 <ons-list-item>
@@ -139,47 +142,68 @@
 
     <template id="tab3.html">
         <ons-page id="Tab3">
-            <section style="padding: 8px">
+            <!-- <section style="padding: 8px">
                 <ons-button modifier="large" onclick="addNewData();">Add New Data</ons-button>
+            </section> -->
+            <section style="padding: 8px">
+                <ons-button modifier="large" onclick="getProduct();" style="background-color: rgb(250, 96, 24);">View all products</ons-button>
             </section>
 
-            <div id="cards">
+            <div id="cards"></div>
                 <script id="product_template" type="text/template">
-                    <% products.forEach(function(product){ %> 
-                        <ons-card>
+                    <% products.forEach(function(product){ 
+                        var product = product.data();%> 
+                        <ons-card onclick="showDetail();">
                                 <img src="<%= product.photo %>" alt="Onsen UI" style="width: 40%; display: block; margin-left: auto; margin-right: auto;">
                             <p style="font-size: 17px;"><%= product.title %></p>
                             <ons-row>
                                 <ons-col style="color: rgb(250, 96, 24); font-size: 20px; text-align: left;">฿<%= product.price %></ons-col>
-                                <ons-col style="text-align: right;"><i class="zmdi zmdi-shopping-cart zmdi-hc-2x" style="color: rgb(251, 195, 104"></i></ons-col>
+                                <!-- <ons-col style="text-align: right;"><i class="zmdi zmdi-shopping-cart zmdi-hc-2x" style="color: rgb(251, 195, 104)"></i></ons-col> -->
                             </ons-row>
                         </ons-card>
                     <% }); %>
                 </script>
-            </div>
         </ons-page>
     </template>
-
 </body>
 <script>
+
     getHomeData();
     //อันนี้เป็นตัวเช็คว่าปุ่มไหนโดนกด
     document.addEventListener('prechange', function (event) {
         if (event.index == 0) {
             console.log('Home clicked');
-            //ถ้าคลิก home ให้เอาข้อมูลหน้า home มา show
             getHomeData();
         }
         else if (event.index == 1) {
             console.log('Cart clicked');
-            //ถ้าคลิก cart ให้เอาข้อมูลหน้า cart มา show
+            localStorage.clear();
             getCartData();
         }
         else if (event.index == 2) {
             console.log('All product clicked');
-            getAllProduct();
+            var category = localStorage.getItem("name");
+            getProduct(category);
+            localStorage.clear();
         }
     });
+
+    function search(input) {
+        console.log(input);
+        var allProductRef = db.collection("PRODUCTS").where("title", "==", input);
+        products = [];
+
+        allProductRef.get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                products.push(doc.data());
+                console.log(doc.data());
+            });
+            var product_template = $('#product_template').html();
+            html = ejs.render(product_template, { products: products });
+            $('#cards').html(html);
+        });
+        document.getElementById('tabbar').setActiveTab(2);
+    }
 
     function getHomeData() {
         var docRef = db.collection("UI").doc("home");
@@ -240,19 +264,62 @@
         })
     }
 
-    function getAllProduct() {
-        var allProductRef = db.collection("PRODUCTS").orderBy("pid", "asc");
-        products = [];
-        allProductRef.get().then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-                // doc.data() is never undefined for query doc snapshots
-                console.log(doc.id, " => ", doc.data());
-                products.push(doc.data());
+    function viewByCategory(input) {
+        var category = localStorage.setItem("name", input);
+        // console.log("viewByCategory name = " + localStorage.getItem("name"));
+        document.getElementById('tabbar').setActiveTab(2);
+    }
+
+    // function getAllProduct() {
+    //     var allProductRef = db.collection("PRODUCTS").orderBy("pid", "asc");
+    //     var products = [];
+    //     allProductRef.get().then(function (querySnapshot) {
+    //         querySnapshot.forEach(function (doc) {
+    //             products.push(doc.data());
+    //         });
+    //         var product_template = $('#product_template').html();
+    //         html = ejs.render(product_template, { products: products });
+    //         $('#cards').html(html);
+    //     });
+    // }
+
+    function getProduct(input) {
+        // products = [];
+        if (input == null) {
+            console.log('get all product');
+            var allProductRef = db.collection("PRODUCTS");
+            allProductRef.get().then(function (querySnapshot) {
+                // querySnapshot.forEach(function (doc) {
+                //     products.push(doc.data());
+                // });
+                var product_template = $('#product_template').html();
+                html = ejs.render(product_template, { products: querySnapshot.docs });
+                console.log(querySnapshot.docs);
+                $('#cards').html(html);
             });
-            var product_template = $('#product_template').html();
-            html = ejs.render(product_template, { products: products });
-            $('#cards').html(html);
-        });
+        } else {
+            console.log('view by category: ' + input);
+            input = input.toLowerCase();
+            var allProductRef = db.collection("PRODUCTS").where("category", "==", input);
+            allProductRef.get().then(function (querySnapshot) {
+                // querySnapshot.forEach(function (doc) {
+                //     products.push(doc.data());
+                // });
+                var product_template = $('#product_template').html();
+                html = ejs.render(product_template, { products: querySnapshot.docs });
+                console.log(querySnapshot.docs);
+                $('#cards').html(html);
+            });
+        }
+    }
+
+    function showDetail() {
+        document.querySelector('#myNavigator').pushPage('page2.html');
+    };
+
+
+    function addToCart() {
+
     }
 
     function addNewData() {
