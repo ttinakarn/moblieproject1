@@ -99,8 +99,8 @@
                                 <ons-row><b><%= product.title %></b></ons-row>
                                 <ons-row style="color: rgb(250, 96, 24)">฿<%= product.price %></ons-row>
                             </div>
-                            <div class="right">
-                                <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey" onclick="removeFromCart('<%= product.title %>');"></i>
+                            <div class="right" onclick="removeFromCart('<%= product.title %>');">
+                                <i class="zmdi zmdi-delete zmdi-hc-2x" style="color: grey"></i>
                                 </div>
                         </ons-list-item>
                     <% }); %>
@@ -123,8 +123,7 @@
 
             <div id="cards"></div>
             <script id="product_template" type="text/template">
-                <% products.forEach(function(product){ 
-                    var product = product.data();%> 
+                <% products.forEach(function(product){;%> 
                     <ons-card onclick="showDetail('<%= product.title %>');">
                             <img src="<%= product.photo %>" alt="Onsen UI" style="width: 40%; display: block; margin-left: auto; margin-right: auto;">
                         <p style="font-size: 17px;"><%= product.title %></p>
@@ -152,8 +151,8 @@
                         <div class="title"><%= product.title %></div>
                         <div style="color: rgb(250, 96, 24); font-size: 20px; text-align: left;">฿<%= product.price %></div><hr>
                         <div><%= product.detail %></div><br>
-                        <section style="padding: 5px">
-                            <ons-button modifier="large" style="background-color: rgb(250, 96, 24);" onclick="addToCart('<%= product.title %>');">Add to cart</ons-button>
+                        <section style="padding: 5px" onclick="addToCart('<%= product.title %>');">
+                            <ons-button modifier="large" style="background-color: rgb(250, 96, 24);">Add to cart</ons-button>
                         </section>
                     </ons-card>
                 <% }); %>
@@ -164,7 +163,10 @@
 <script>
 
     getHomeData();
+    getProduct(null);
     var cart = [];
+    var allProduct = [];
+    var searchProduct = [];
 
     //อันนี้เป็นตัวเช็คว่าปุ่มไหนโดนกด
     document.addEventListener('prechange', function (event) {
@@ -208,22 +210,36 @@
         });
     }
 
-    function search(input) {
-        console.log(input);
-        var allProductRef = db.collection("PRODUCTS").where("title", "==", input);
-        products = [];
+    // function search(input) {
+    //     console.log(input);
+    //     var allProductRef = db.collection("PRODUCTS").where("title", "==", input);
+    //     products = [];
 
-        allProductRef.get().then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-                products.push(doc.data());
-                console.log(doc.data());
-            });
-            var product_template = $('#product_template').html();
-            html = ejs.render(product_template, { products: products });
-            $('#cards').html(html);
-        });
+    //     allProductRef.get().then(function (querySnapshot) {
+    //         querySnapshot.forEach(function (doc) {
+    //             products.push(doc.data());
+    //             console.log(doc.data());
+    //         });
+    //         var product_template = $('#product_template').html();
+    //         html = ejs.render(product_template, { products: products });
+    //         $('#cards').html(html);
+    //     });
+    //     document.getElementById('tabbar').setActiveTab(2);
+    // }
+
+    function search(search) {
+        var category = localStorage.setItem("name", "search");
         document.getElementById('tabbar').setActiveTab(2);
-    }
+        console.log(allProduct);
+        function filterItems(query) {
+            return allProduct.filter(function(el) {
+                return el.toLowerCase().indexOf(query.toLowerCase()) > -1;
+            })
+        }
+        console.log(filterItems(search));
+        searchProduct = filterItems(search);
+        console.log(searchProduct);
+    };
 
     function addToCart(title) {
         ons.notification.toast(title + 'has been added to your cart!', {
@@ -260,27 +276,51 @@
     }
 
     function viewByCategory(txt) {
-        var category = localStorage.setItem("name", txt);
+        localStorage.setItem("name", txt);
         document.getElementById('tabbar').setActiveTab(2);
     }
 
-    function getProduct(input) {
+    function getProduct(input) {        
         if (input == null) {
+            var getAllProduct = [];
             console.log('get all product');
             var allProductRef = db.collection("PRODUCTS");
             allProductRef.get().then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    allProduct.push(doc.data().title);
+                    getAllProduct.push(doc.data());
+                });
                 var product_template = $('#product_template').html();
-                html = ejs.render(product_template, { products: querySnapshot.docs });
-                console.log(querySnapshot.docs);
+                html = ejs.render(product_template, { products: getAllProduct });
+                // console.log(querySnapshot.docs);
                 $('#cards').html(html);
             });
+        } else if (input == 'search'){
+            var searchData = [];
+            console.log(searchProduct);
+            searchProduct.forEach(function(title){                
+                var allProductRef = db.collection("PRODUCTS").where("title", "==", title);
+                allProductRef.get().then(function (querySnapshot) {
+                    querySnapshot.forEach(function (doc) {
+                        searchData.push(doc.data());
+                    });
+                    var product_template = $('#product_template').html();
+                    html = ejs.render(product_template, { products: searchData });
+                    console.log(querySnapshot.docs);
+                    $('#cards').html(html);
+                });
+            });
         } else {
+            var getCategory = [];
             console.log('view by category: ' + input);
             input = input.toLowerCase();
             var allProductRef = db.collection("PRODUCTS").where("category", "==", input);
             allProductRef.get().then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    getCategory.push(doc.data());
+                });
                 var product_template = $('#product_template').html();
-                html = ejs.render(product_template, { products: querySnapshot.docs });
+                html = ejs.render(product_template, { products: getCategory });
                 console.log(querySnapshot.docs);
                 $('#cards').html(html);
             });
