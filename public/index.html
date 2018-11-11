@@ -36,21 +36,22 @@
 </head>
 
 <body>
-        
-    <ons-page>
-        <ons-toolbar>
-            <div class="center" id="appname">Home</div>
-        </ons-toolbar>
+    <ons-navigator swipeable id="myNavigator">
+        <ons-page>
+            <ons-toolbar>
+                <div class="center" id="appname">Home</div>
+            </ons-toolbar>
 
-        <ons-tabbar swipeable position="auto" id="tabbar">
-            <ons-tab page="tab1.html" label="Home" icon="ion-home, material:md-home" badge="5930213054" active>
-            </ons-tab>
-            <ons-tab page="tab2.html" label="Cart" icon="md-shopping-cart">
-            </ons-tab>
-            <ons-tab page="tab3.html" label="All Products" icon="md-apps">
-            </ons-tab>
-        </ons-tabbar>
-    </ons-page>
+            <ons-tabbar swipeable position="auto" id="tabbar">
+                <ons-tab page="tab1.html" label="Home" icon="ion-home, material:md-home" badge="5930213054" active>
+                </ons-tab>
+                <ons-tab page="tab2.html" label="Cart" icon="md-shopping-cart">
+                </ons-tab>
+                <ons-tab page="tab3.html" label="All Products" icon="md-apps">
+                </ons-tab>
+            </ons-tabbar>
+        </ons-page>
+    </ons-navigator>
 
     <template id="tab1.html">
         <ons-page id="Tab1">
@@ -150,21 +151,45 @@
             </section>
 
             <div id="cards"></div>
-                <script id="product_template" type="text/template">
-                    <% products.forEach(function(product){ 
-                        var product = product.data();%> 
-                        <ons-card onclick="showDetail();">
-                                <img src="<%= product.photo %>" alt="Onsen UI" style="width: 40%; display: block; margin-left: auto; margin-right: auto;">
-                            <p style="font-size: 17px;"><%= product.title %></p>
-                            <ons-row>
-                                <ons-col style="color: rgb(250, 96, 24); font-size: 20px; text-align: left;">฿<%= product.price %></ons-col>
-                                <!-- <ons-col style="text-align: right;"><i class="zmdi zmdi-shopping-cart zmdi-hc-2x" style="color: rgb(251, 195, 104)"></i></ons-col> -->
-                            </ons-row>
-                        </ons-card>
-                    <% }); %>
-                </script>
+            <script id="product_template" type="text/template">
+                <% products.forEach(function(product){ 
+                    var product = product.data();%> 
+                    <ons-card onclick="showDetail('<%= product.title %>');">
+                            <img src="<%= product.photo %>" alt="Onsen UI" style="width: 40%; display: block; margin-left: auto; margin-right: auto;">
+                        <p style="font-size: 17px;"><%= product.title %></p>
+                        <ons-row>
+                            <ons-col style="color: rgb(250, 96, 24); font-size: 20px; text-align: left;">฿<%= product.price %></ons-col>
+                        </ons-row>
+                    </ons-card>
+                <% }); %>
+            </script>
         </ons-page>
     </template>
+
+    <template id="detail.html">
+        <ons-page id="detail">
+            <ons-toolbar>
+                <div class="left"><ons-back-button></ons-back-button>Back</div>
+            </ons-toolbar>
+      
+            <div id="detailCard"></div>
+            <script id="detail_template" type="text/template">
+                <% product.forEach(function(product){
+                    var product = product.data();%> 
+                    <ons-card>
+                        <img src="<%= product.photo %>" alt="Onsen UI" style="width: 100%">
+                        <div class="title"><%= product.title %></div>
+                        <div style="color: rgb(250, 96, 24); font-size: 20px; text-align: left;">฿<%= product.price %></div><hr>
+                        <div><%= product.detail %></div><br>
+                        <section style="padding: 5px">
+                            <ons-button modifier="large" style="background-color: rgb(250, 96, 24);">Add to cart</ons-button>
+                        </section>
+                    </ons-card>
+                    
+                <% }); %>
+            </script>
+        </ons-page>
+      </template>
 </body>
 <script>
 
@@ -187,23 +212,6 @@
             localStorage.clear();
         }
     });
-
-    function search(input) {
-        console.log(input);
-        var allProductRef = db.collection("PRODUCTS").where("title", "==", input);
-        products = [];
-
-        allProductRef.get().then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-                products.push(doc.data());
-                console.log(doc.data());
-            });
-            var product_template = $('#product_template').html();
-            html = ejs.render(product_template, { products: products });
-            $('#cards').html(html);
-        });
-        document.getElementById('tabbar').setActiveTab(2);
-    }
 
     function getHomeData() {
         var docRef = db.collection("UI").doc("home");
@@ -228,34 +236,23 @@
         }).catch(function (error) {
             console.log("Error getting document:", error);
         });
+    }
 
-        // var productRef = db.collection("PRODUCTS").orderBy("pid", "asc");
-        // products = [];
-        // productRef.get().then(function (querySnapshot) {
-        //     querySnapshot.forEach(function (doc) {
-        //         console.log(doc.id, " => ", doc.data());
-        //         products.push(doc.data());
-        //     });
-        //     var product_template = $('#product_template').html();
-        //     html = ejs.render(product_template, { products: products });
-        //     $('#cards').html(html);
-        // });
-        // productRef.get().then(function (doc) {
-        //     if (doc.exists) {
-        //         console.log("Document data:", doc.data());
-        //         var data = doc.data();
+    function search(input) {
+        console.log(input);
+        var allProductRef = db.collection("PRODUCTS").where("title", "==", input);
+        products = [];
 
-        //         var product_template = $('#product_template').html();
-        //         html = ejs.render(product_template, { products: data.product });
-        //         $('#cards').html(html);
-        //     }
-        //     else {
-        //         // doc.data() will be undefined in this case
-        //         console.log("No such document!");
-        //     }
-        // }).catch(function (error) {
-        //     console.log("Error getting document:", error);
-        // });
+        allProductRef.get().then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                products.push(doc.data());
+                console.log(doc.data());
+            });
+            var product_template = $('#product_template').html();
+            html = ejs.render(product_template, { products: products });
+            $('#cards').html(html);
+        });
+        document.getElementById('tabbar').setActiveTab(2);
     }
 
     function getCartData() {
@@ -266,32 +263,14 @@
 
     function viewByCategory(input) {
         var category = localStorage.setItem("name", input);
-        // console.log("viewByCategory name = " + localStorage.getItem("name"));
         document.getElementById('tabbar').setActiveTab(2);
     }
 
-    // function getAllProduct() {
-    //     var allProductRef = db.collection("PRODUCTS").orderBy("pid", "asc");
-    //     var products = [];
-    //     allProductRef.get().then(function (querySnapshot) {
-    //         querySnapshot.forEach(function (doc) {
-    //             products.push(doc.data());
-    //         });
-    //         var product_template = $('#product_template').html();
-    //         html = ejs.render(product_template, { products: products });
-    //         $('#cards').html(html);
-    //     });
-    // }
-
     function getProduct(input) {
-        // products = [];
         if (input == null) {
             console.log('get all product');
             var allProductRef = db.collection("PRODUCTS");
             allProductRef.get().then(function (querySnapshot) {
-                // querySnapshot.forEach(function (doc) {
-                //     products.push(doc.data());
-                // });
                 var product_template = $('#product_template').html();
                 html = ejs.render(product_template, { products: querySnapshot.docs });
                 console.log(querySnapshot.docs);
@@ -302,9 +281,6 @@
             input = input.toLowerCase();
             var allProductRef = db.collection("PRODUCTS").where("category", "==", input);
             allProductRef.get().then(function (querySnapshot) {
-                // querySnapshot.forEach(function (doc) {
-                //     products.push(doc.data());
-                // });
                 var product_template = $('#product_template').html();
                 html = ejs.render(product_template, { products: querySnapshot.docs });
                 console.log(querySnapshot.docs);
@@ -313,9 +289,28 @@
         }
     }
 
-    function showDetail() {
-        document.querySelector('#myNavigator').pushPage('page2.html');
+    function showDetail(title) {
+        var productRef = db.collection("PRODUCTS").where("title", "==", title);
+        console.log(productRef);
+        productRef.get().then(function (querySnapshot) {
+            var detail_template = $('#detail_template').html();
+            html = ejs.render(detail_template, { product: querySnapshot.docs });
+            console.log(querySnapshot.docs);
+            $('#detailCard').html(html);
+        });
+        myNavigator.pushPage('detail.html');
     };
+
+    function showDetailP() {
+    var dataproduct = localStorage.getItem('getDep');
+    var apr = db.collection("product").where("title", "==", dataproduct);
+    apr.get().then(function (querySnapshot) {
+      var page2_template = $('#page2_template').html();
+      var html = ejs.render(page2_template, { dataDep: querySnapshot.docs });
+      $('#showDep').html(html); 
+    })
+  
+  }
 
 
     function addToCart() {
